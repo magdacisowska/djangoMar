@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% load static %}
+
+    <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet">
+
+    <title>Delete page</title>
+</head>
+
+<body>
+<div class="container">
+
+    <h1 class="display-3">Usuń zadanie</h1>
+
+    <form method="post">{% csrf_token %}
+    <p>Usunąć zadanie z dnia {{ object.date_show }}, projekt "{{ object.project_id }}"?</p>
+        <button type="submit" class="btn btn-outline-danger">Potwierdź</button>
+</form>
+
+</div>
+</body>
+</html>

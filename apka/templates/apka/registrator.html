@@ -1,0 +1,196 @@
+<style>
+
+    table {
+        border: 0.3px solid rgba(0, 0, 0, 0.22);
+    }
+
+    .no_par {
+        background-color: white;
+    }
+
+    .par {
+        background-color: whitesmoke;
+    }
+
+    .new {
+        background-color: rgba(0, 100, 0, 0.67);
+        {#background-color: slategray;#}
+    }
+
+    .weekend {
+        background-color: rgba(246, 250, 85, 0.71);
+    }
+
+
+    #tabela {
+        width: 70%;
+        margin-right: 14%;;
+        padding: 10px;
+        float: right;
+    }
+
+    .projects {
+        width: 30%;
+        margin-right: 53.5%;
+        float: right;
+    }
+
+    input {
+        width: 70px;
+        height: 30px;
+        border-radius: 5px;
+    }
+
+    body{
+        transform: scale(0.95);
+    }
+
+
+</style>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.7, shrink-to-fit=no">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+
+    {% load static %}
+
+    <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet">
+    <link href="{% static 'css/datepicker.css'%}" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-table.min.css'%}" rel="stylesheet">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+{#    <script src="{% static 'js/jquery.min.js' %}"></script>#}
+    <script src="{% static 'js/bootstrap-datepicker.js'%}"></script>
+    <script src="{% static 'js/bootstrap-datepicker.pl.js'%}"></script>
+
+    <title>
+        Rejestrator
+    </title>
+
+</head>
+
+<body>
+<div id="tabela">
+
+    <h1 class="display-3">{{ user.first_name }} arkusz godzin </h1></br>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:index' %}">Strona główna</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{% url 'apka:task_form' %}">Arkusz godzin</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:summary' %}">Podsumuj projekty</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:submit_month' %}">Podsumuj miesiąc</a></li>
+    </ul><p></p>
+
+
+    <table class="table table-sm" >
+    <thead class="thead-dark">
+        <tr>
+            <th>Dzień tygodnia</th>
+            <th>Godziny pracy</th>
+            <th>Przerwa</th>
+            <th>Projekt</th>
+            <th>Opis</th>
+            <th>Godzin</th>
+            <th>Łącznie</th>
+            <th>Stałe</th>
+            <th>Nadgodziny</th>
+            <th>Zaaw.</th>
+            <th>Edycja</th>
+        </tr>
+    </thead>
+        {% regroup task_list by date_show as grouped %}
+        {% for group in grouped %}
+        {% for i in group.list %}
+            {% if i.is_weekend %}
+                <tr class="weekend">
+            {% elif i.day_parity %}
+                <tr class="par">
+            {% else %}
+                <tr class="no_par">
+            {% endif %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.date_show }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.time_show }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.break_time_delta }}</td>{% endifchanged %}
+                <td>{{ i.project_id }}{{ i.action }}</td>
+                <td>{{ i.description }}</td>
+                <td>{{ i.hours }}</td>
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.hours_calc }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.fixed_hours }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.overtime_hr }}</td>{% endifchanged %}
+                <td>{{ i.advancement }} %</td>
+                {% if i.was_published_recently and not i.approved %}
+                    <td align="center"><a href={% url 'apka:edit_form' i.id %}><b>&#9986;</b></a><a href={% url 'apka:delete_form' i.id %}>  <b>&#10006;</b></a></td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        {% endfor %}
+        <tr class="new">
+            <form method="post" autocomplete="off">{% csrf_token %}
+                <td>
+                    <input size="10" type="text" class="form-control" style="width: 115px; height: 30px" id="date" name="date" value="Dzień" readonly="true">
+                    <script type="text/javascript">
+                        $("#date").datepicker({
+                            format: "yyyy-mm-dd",
+                            autoclose: true,
+                            startDate: '-14d',
+                            endDate: '-0d',
+                            weekStart: 1,
+                            locale: 'pl',
+                            language: 'pl',
+                            lang: 'pl'
+                        });
+                    </script>
+                </td>
+                <td>{{ form.hour_begin }} - {{ form.hour_end }}</td>
+                <td>{{ form.break_time }}</td>
+                <td>{{ form.project_id }}{{ form.action }}</td>
+                <td><input type="text" class="form-control" style="width: 200px; height: 30px" name="description"></td>
+                <td><input type="number" step="0.5" class="form-control" style="width: 60px; height: 30px" name="hours" value="8"></td>
+                <td hidden="True">{{ form.id }}</td><td></td><td></td><td></td>
+                <td>{{ form.advancement }} %</td>
+                <td><button type="submit" class="btn btn-success">Zapisz</button></td>
+            </form>
+        </tr>
+
+    </table>
+
+
+</div>
+
+
+<div id="accordion" class="projects">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Projekty
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse hidden" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        <table data-toggle="table" data-sort-name="code" data-sort-order="asc" data-search="true" style="font-size: medium">
+        <thead><tr>
+            <th data-field="code" data-sortable="true">Kod</th>
+            <th data-field="desc" data-sortable="true">Opis</th>
+        </thead></tr>
+            {% for project in project_list %}
+            <tr>
+                <td>{{ project.code }}</td>
+                <td>{{ project.full_name }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+

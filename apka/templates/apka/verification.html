@@ -1,0 +1,87 @@
+
+<style>
+    body {font-family: Verdana, sans-serif;}
+    table {
+        border: 2px solid rgba(0, 0, 0, 0.27);
+    }
+
+    #tabela {
+        width: 70%;
+        margin-right: 10%;
+        padding: 10px;
+        float: right;
+    }
+
+    .projects {
+        width: 15%;
+        margin-right: 3%;
+        margin-top: 6%;
+        padding: 10px;
+        float: right;
+    }
+
+    input {
+        width: 90px;
+        height: 30px;
+        border-radius: 5px;
+    }
+
+    body{
+        transform: scale(0.95);
+    }
+
+</style>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.7, shrink-to-fit=no">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    {% load static %}
+
+    <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <title>
+        Zatwierdź
+    </title>
+</head>
+<body>
+<div id="tabela">
+    <h1 class="display-3">Zatwierdź godziny</h1></br>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:index' %}">Strona główna</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:verified' %}">Zatwierdź</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:fetched' %}">Zaktualizuj bazę pracowników</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:fetched_p' %}">Zaktualizuj bazę projektów</a></li>
+    </ul><p></p>
+
+    <table class="table table-sm table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Pracownik</th>
+            <th>Dzień tygodnia</th>
+            <th>Godziny pracy</th>
+            <th>Projekt</th>
+            <th>Opis</th>
+            <th>Godzin</th>
+            <th>Zatwierdzono?</th>
+        </tr>
+    </thead>
+        {% for i in task_list %}
+            <tr>
+                <td>{{ i.user.first_name }}</td>
+                <td>{{ i.date_show }}</td>
+                <td>{{ i.time_show }}</td>
+                <td>{{ i.project_id }}</td>
+                <td>{{ i.description }}</td>
+                <td>{{ i.hours }}</td>
+                <td>{{ i.approved|yesno:"Tak,Nie" }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+</body>

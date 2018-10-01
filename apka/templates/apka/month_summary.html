@@ -1,0 +1,110 @@
+
+<style>
+    body {font-family: Verdana, sans-serif;}
+    table {
+        border: 1px solid rgba(0, 0, 0, 0.27);
+    }
+
+    .no_par {
+        background-color: white;
+    }
+
+    .par {
+        background-color: whitesmoke;
+    }
+
+    .weekend {
+        background-color: rgba(246, 250, 85, 0.71);
+    }
+
+    #tabela {
+        width: 70%;
+        margin-right: 10%;
+        padding: 10px;
+        float: right;
+    }
+
+    body{
+        transform: scale(0.95);
+    }
+
+</style>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.7, shrink-to-fit=no">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    {% load static %}
+
+    <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <title>
+        Historia
+    </title>
+</head>
+
+<body>
+<div id="tabela">
+    <h1 class="display-3"> {{ user.first_name }} arkusz godzin {{ month }}/{{ year }}</h1></br>
+
+<ul class="pagination justify-content-center">
+    {% if month == 12 %}
+        <li class="page-item"><a class="page-link" href="{% url 'apka:month_summary' month|add:"-1" year %}">&larr; Poprzedni miesiąc</a></li>
+        <li class="page-item"><a class="page-link" href="{% url 'apka:index' %}">Strona główna</a></li>
+        <li class="page-item"><a class="page-link" href="{% url 'apka:month_summary' month|add:"-11" year|add:"1" %}">Następny miesiąc &rarr;</a></li>
+    {% elif month == 1 %}
+        <li class="page-item"><a class="page-link" href="{% url 'apka:month_summary' month|add:"11" year|add:"-1" %}">&larr; Poprzedni miesiąc</a></li>
+        <li class="page-item"><a class="page-link" href="{% url 'apka:index' %}">Strona główna</a></li>
+        <li class="page-item"><a class="page-link" href="{% url 'apka:month_summary' month|add:"1" year %}">Następny miesiąc &rarr;</a></li>
+    {% else %}
+        <li class="page-item"><a class="page-link" href="{% url 'apka:month_summary' month|add:"-1" year %}">&larr; Poprzedni miesiąc</a></li>
+        <li class="page-item"><a class="page-link" href="{% url 'apka:index' %}">Strona główna</a></li>
+        <li class="page-item"><a class="page-link" href="{% url 'apka:month_summary' month|add:"1" year %}">Następny miesiąc &rarr;</a></li>
+    {% endif %}
+</ul>
+
+    <table class="table table-sm">
+    <thead class="thead-dark">
+        <tr>
+            <th>Dzień tygodnia</th>
+            <th>Godziny racy</th>
+            <th>Przerwa</th>
+            <th>Projekt</th>
+            <th>Opis</th>
+            <th>Godzin</th>
+            <th>Godzin łącznie</th>
+            <th>Godziny stałe</th>
+            <th>Nadgodziny</th>
+            <th>Edycja</th>
+        </tr>
+    </thead>
+        {% regroup task_list by date_show as grouped %}
+        {% for group in grouped %}
+        {% for i in group.list %}
+            {% if i.is_weekend %}
+                <tr class="weekend">
+            {% elif i.day_parity %}
+                <tr class="par">
+            {% else %}
+                <tr class="no_par">
+            {% endif %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.date_show }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.time_show }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.break_time_delta }}</td>{% endifchanged %}
+                <td>{{ i.project_id }}{{ i.action }}</td>
+                <td>{{ i.description }}</td>
+                <td>{{ i.hours }}</td>
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.hours_calc }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.fixed_hours }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.overtime_hr }}</td>{% endifchanged %}
+                <td></td>
+            </tr>
+        {% endfor %}
+        {% endfor %}
+    </table>
+
+</div>
+</body>

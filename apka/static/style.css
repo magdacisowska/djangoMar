@@ -1,0 +1,43 @@
+    table {
+        border: 2px solid rgba(0, 0, 0, 0.27);
+    }
+
+    .no_par {
+        background-color: beige;
+    }
+
+    .par {
+        background-color: honeydew;
+    }
+
+    .new {
+        background-color: rgba(0, 100, 0, 0.67);
+    }
+
+    .error {
+        background-color: salmon;
+    }
+
+    #tabela {
+        width: 70%;
+        margin-right: 10%;
+        padding: 10px;
+        float: right;
+    }
+
+    #projects {
+        width: 10%;
+        margin-right: 3%;
+        margin-top: 5%;
+        padding: 10px;
+        float: right;
+    }
+
+     input {
+        width: 90px;
+        height: 25px;
+    }
+
+    body{
+        transform: scale(0.95);
+    }

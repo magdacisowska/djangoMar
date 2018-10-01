@@ -1,0 +1,165 @@
+<style>
+
+    table {
+        border: 1px solid rgba(0, 0, 0, 0.27);
+    }
+
+    .no_par {
+        background-color: white;
+    }
+
+    .par {
+        background-color: whitesmoke;
+    }
+
+    .summary {
+        background-color: rgba(255, 140, 0, 0.67);
+    }
+
+    .error {
+        background-color: red;
+    }
+
+    .weekend {
+        background-color: rgba(246, 250, 85, 0.71);
+    }
+
+    #tabela {
+        width: 70%;
+        margin-right: 14%;;
+        padding: 10px;
+        float: right;
+    }
+
+    .projects {
+        width: 30%;
+        margin-right: 53.5%;
+        float: right;
+    }
+
+    body{
+        transform: scale(0.95);
+    }
+
+</style>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.7, shrink-to-fit=no">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    {% load static %}
+
+    <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <title>
+        Rejestrator
+    </title>
+</head>
+
+<body>
+<div id="tabela">
+    <h1 class="display-3">{{ user.first_name }} arkusz godzin</h1></br>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:index' %}">Strona główna</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:task_form' %}">Arkusz godzin</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:summary' %}">Podsumuj projekty</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{% url 'apka:submit_month' %}">Podsumuj miesiąc</a></li>
+    </ul><p></p>
+
+    <table class="table table-sm">
+    <thead class="thead-dark">
+        <tr>
+            <th>Dzień tygodnia</th>
+            <th>Godziny pracy</th>
+            <th>Przerwa</th>
+            <th>Projekt</th>
+            <th>Opis</th>
+            <th>Godzin</th>
+            <th>Łącznie</th>
+            <th>Stałe</th>
+            <th>Nadgodziny</th>
+            <th>Zaaw.</th>
+            <th>Edycja</th>
+        </tr>
+    </thead>
+        {% regroup task_list by date_show as grouped %}
+        {% for group in grouped %}
+        {% for i in group.list %}
+            {% if i.is_weekend %}
+                <tr class="weekend">
+            {% elif i.day_parity %}
+                <tr class="par">
+            {% else %}
+                <tr class="no_par">
+            {% endif %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.date_show }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.time_show }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.break_time_delta }}</td>{% endifchanged %}
+                <td>{{ i.project_id }}{{ i.action }}</td>
+                <td>{{ i.description }}</td>
+                {% if i.test %}
+                    <td>{{ i.hours }}</td>
+                    {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.hours_calc }}</td>{% endifchanged %}
+                {% else %}
+                    <td class="error">{{ i.hours }}</td>
+                    {% ifchanged %}<td class="error" rowspan="{{ group.list|length }}">{{ i.hours_calc }} niezg.</td>{% endifchanged %}
+                {% endif %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.fixed_hours }}</td>{% endifchanged %}
+                {% ifchanged %}<td rowspan="{{ group.list|length }}">{{ i.overtime_hr }}</td>{% endifchanged %}
+                <td>{{ i.advancement }} %</td>
+                {% if i.was_published_recently and not i.approved %}
+                    <td><a href={% url 'apka:edit_form' i.id %}><b>&#9986;</b>    </a><a href={% url 'apka:delete_form' i.id %}>  <b>&#10006;</b></a></td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        {% endfor %}
+        <tr class="summary">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>Razem godzin:</td>
+            <td>{{ sum_1 }}</td>
+            <td>{{ sum_2 }}</td>
+            <td>{{ fixed_sum }}</td>
+            <td>{{ overtime_sum }}</td>
+            <td></td><td></td>
+        </tr>
+
+    </table>
+
+</div>
+
+
+<div id="accordion" class="projects">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Projekty
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse hidden" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        <table class="table table-responsive">
+        {% for project in project_list %}
+            <tr>
+                <td>{{ project.full_name }}</td>
+                <td>{{ project.code }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>

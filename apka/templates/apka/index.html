@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=0.9, shrink-to-fit=no">
+
+      {% load static %}
+
+        <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet">
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <title>
+        Karta czasu pracy
+    </title>
+  </head>
+
+  <body>
+     <div class="container">
+        <p></p>
+       <div class="row">
+           <div class="col-sm">
+               <h1 class="display-3">Karta czasu pracy</h1>
+           </div>
+
+           <div class="col-sm">
+               <img src="{% static 'images/logo.jpg' %}" style="margin-left: 90px">
+           </div>
+
+        </div>
+     <div class="row">
+            <div class="col-sm">
+
+            </div>
+            <div class="col-sm">
+
+            </div>
+           <div class="col-sm">
+
+            </div>
+        </div>
+
+        <p></p>
+        <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+            {% if user.is_staff %}
+                <a class="nav-link" href="{% url 'apka:task_form' %}">-Arkusz godzin-</a>
+                <a class="nav-link" href="{% url 'apka:users_list' %}">-Lista pracowników-</a>
+                <a class="nav-link" href="{% url 'apka:month_summary' current_month current_year %}">-Historia-</a>
+                <a class="nav-link" href="{% url 'apka:verification' %}">-Zarządzaj-</a>
+                <a class="nav-link" href="{% url 'admin:index' %}">-Panel administratora Django-</a>
+                <a class="nav-link" href="{% url 'logout' %}">-Wyloguj się-</a>
+            {% elif user.is_authenticated %}
+                <a class="nav-link" href="{% url 'apka:task_form' %}">-Arkusz godzin-</a>
+                <a class="nav-link" href="{% url 'apka:users_list' %}">-Lista pracowników-</a>
+                <a class="nav-link" href="{% url 'apka:month_summary' current_month current_year %}">-Historia-</a>
+                <a class="nav-link" href="{% url 'logout' %}">-Wyloguj się-</a>
+            {% else %}
+                <a class="nav-link" href="{% url 'login' %}">-Zaloguj się-</a>
+                <a class="nav-link" href="{% url 'apka:users_list' %}">-Lista pracowników-</a>
+            {% endif %}
+        </nav>
+         <p></p>
+
+     {% if user.is_authenticated %}
+     <table class="table table-xl" style="border: solid 1px lightgray;">
+         <tr>
+             <td><a><b>Witaj {{ user.first_name }}</b></a></td>
+             <td style="text-align: end">
+             <iframe src="http://free.timeanddate.com/clock/i6fiwt29/n1449/szw110/szh110/hocddd/hbw0/hfc000/cf100/hgr0/fav0/fiv0/mqcfff/mql15/mqw8/mqd100/mhcfff/mhl15/mhw4/mhd100/hhcff9/hmcff9" frameborder="0" width="110" height="110"></iframe>
+             </td>
+         </tr>
+         <tr>
+             <td>Data ostatniego logowania: <p></p>{{ user.last_login }}</td>
+             <td></td>
+         </tr>
+     </table>
+     {% endif %}
+
+    </div>
+
+  </body>
+</html>
+

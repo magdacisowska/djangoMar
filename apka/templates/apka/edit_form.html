@@ -1,0 +1,152 @@
+<style>
+    body {font-family: Verdana, sans-serif;}
+    table {
+        border: 0.3px solid rgba(0, 0, 0, 0.27);
+    }
+
+    .no_par {
+        background-color: white;
+    }
+
+    .par {
+        background-color: whitesmoke;
+    }
+
+    .edit {
+        background-color: rgba(165, 42, 42, 0.76);
+    }
+
+    .weekend {
+        background-color: rgba(246, 250, 85, 0.71);
+    }
+
+    #tabela {
+        width: 70%;
+        margin-right: 14%;;
+        padding: 10px;
+        float: right;
+    }
+
+    .projects {
+        width: 30%;
+        margin-right: 53.5%;
+        float: right;
+    }
+
+    input {
+        width: 90px;
+        height: 30px;
+        border-radius: 5px;
+    }
+
+    body{
+        transform: scale(0.95);
+    }
+
+</style>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.7, shrink-to-fit=no">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    {% load static %}
+
+    <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+    <title>
+        Rejestrator
+    </title>
+</head>
+<body>
+<div id="tabela">
+    <h1 class="display-3">{{ user.first_name }} arkusz godzin</h1></br>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:index' %}">Strona główna</a></li>
+        <li class="nav-item"><a class="nav-link active" href="{% url 'apka:task_form' %}">Arkusz godzin</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:summary' %}">Podsumuj projekty</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'apka:submit_month' %}">Podsumuj miesiąc</a></li>
+    </ul><p></p>
+
+    <table class="table table-sm">
+    <thead class="thead-dark">
+        <tr>
+            <th>Dzień tygodnia</th>
+            <th>Godziny pracy</th>
+            <th>Przerwa</th>
+            <th>Projekt</th>
+            <th>Opis</th>
+            <th>Godzin</th>
+            <th>Zaaw.</th>
+            <th>Edycja</th>
+        </tr>
+    </thead>
+        {% for i in task_list %}
+            {% if object_id == i.id %}
+                <tr class="edit">
+                    <form method="post">{% csrf_token %}
+                        <td>{{ i.date_show }}</td>
+                        <td>{{ form.hour_begin }} : {{ form.hour_end }}</td>
+                        <td>{{ form.break_time }}</td>
+                        <td>{{ form.project_id }}</td>
+                        <td>{{ form.description }}</td>
+                        <td>{{ form.hours }}</td>
+                        <td>{{ form.advancement }}</td>
+                        <td><button type="submit" class="btn btn-danger">Zmień</button></td>
+                    </form>
+                </tr>
+            {% else %}
+                {% if i.is_weekend %}
+                    <tr class="weekend">
+                {% elif i.day_parity %}
+                    <tr class="par">
+                {% else %}
+                    <tr class="no_par">
+                {% endif %}
+                    <td>{{ i.date_show }}</td>
+                    <td>{{ i.time_show }}</td>
+                    <td>{{ i.break_time_delta }}</td>
+                    <td>{{ i.project_id }}{{ i.action }}</td>
+                    <td>{{ i.description }}</td>
+                    <td>{{ i.hours }}</td>
+                    <td>{{ i.advancement }} %</td>
+                {% if i.was_published_recently and not i.approved %}
+                    <td><a href={% url 'apka:edit_form' i.id %}>Edytuj</a></td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+
+</div>
+
+<div id="accordion" class="projects">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Projekty
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse hidden" aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+        <table class="table table-responsive">
+        {% for project in project_list %}
+            <tr>
+                <td>{{ project.full_name }}</td>
+                <td>{{ project.code }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>

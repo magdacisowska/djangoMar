@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    {% load static %}
+
+    <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet">
+
+    <title>Zatwierdzono</title>
+</head>
+<body>
+<div class="container">
+    <h1 class="display-3">Zatwierdzono</h1>
+    <a href="{% url 'apka:verification' %}">Powrót</a>
+</div>
+</body>
+</html>

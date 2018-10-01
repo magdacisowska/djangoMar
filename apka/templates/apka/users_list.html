@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=0.9, shrink-to-fit=no">
+
+      {% load static %}
+
+      <link href="{% static 'css/bootstrap.css'%}" rel="stylesheet">
+      <link href="{% static 'css/bootstrap-table.min.css'%}" rel="stylesheet">
+{#      <script src="{% static 'js/bootstrap-table.min.js'%}"></script>#}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+{#      <script src="{% static 'js/jquery.min.js' %}"></script>#}
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+
+    <title>
+        Karta czasu pracy
+    </title>
+  </head>
+
+  <body>
+     <div class="container">
+        <p></p>
+       <div class="row">
+           <div class="col-sm">
+               <h1 class="display-3">Karta czasu pracy</h1>
+           </div>
+
+           <div class="col-sm">
+               <img src="{% static 'images/logo.jpg' %}" style="margin-left: 90px">
+           </div>
+
+        </div>
+     <div class="row">
+            <div class="col-sm">
+
+            </div>
+            <div class="col-sm">
+
+            </div>
+           <div class="col-sm">
+
+            </div>
+        </div>
+
+        <p></p>
+        <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+            {% if user.is_staff %}
+                <a><b>Witaj {{ user.first_name }}</b></a>
+                <a class="nav-link" href="{% url 'apka:task_form' %}">-Arkusz godzin-</a>
+                <a class="nav-link" href="{% url 'apka:index' %}">-Strona główna-</a>
+                <a class="nav-link" href="{% url 'apka:month_summary' current_month current_year %}">-Historia-</a>
+                <a class="nav-link" href="{% url 'apka:verification' %}">-Zarządzaj-</a>
+                <a class="nav-link" href="{% url 'admin:index' %}">-Panel administratora Django-</a>
+                <a class="nav-link" href="{% url 'logout' %}">-Wyloguj się-</a>
+            {% elif user.is_authenticated %}
+                <a><b>Witaj {{ user.first_name }}</b></a>
+                <a class="nav-link" href="{% url 'apka:task_form' %}">-Arkusz godzin-</a>
+                <a class="nav-link" href="{% url 'apka:index' %}">-Strona główna-</a>
+                <a class="nav-link" href="{% url 'apka:month_summary' current_month current_year %}">-Historia-</a>
+                <a class="nav-link" href="{% url 'logout' %}">-Wyloguj się-</a>
+            {% else %}
+                <a class="nav-link" href="{% url 'login' %}">-Zaloguj się-</a>
+                <a class="nav-link" href="{% url 'apka:index' %}">-Strona główna-</a>
+            {% endif %}
+        </nav>
+
+         <table data-toggle="table" data-sort-name="dep" data-sort-order="asc" data-search="true">
+             <thead>
+             <tr>
+                <th data-field="name" data-sortable="true">Imię i Nazwisko</th>
+                <th data-field="surname" data-sortable="true">Nazwisko</th>
+                <th data-field="dep" data-sortable="true">Oddział</th>
+                <th data-field="phone" data-sortable="true">Nr tel.</th>
+                 <th data-field="number" data-sortable="true">Nr wewn.</th>
+                <th data-field="email" data-sortable="true">Email</th>
+            </tr>
+             </thead>
+             {% for i in user_list %}
+                 <tr>
+                     <td>{{ i.4 }}</td>
+                     <td>{{ i.3 }}</td>
+                     <td>{{ i.9}}</td>
+                     <td>{{ i.5 }}</td>
+                     <td>{{ i.6 }}</td>
+                     <td>{{ i.8 }}</td>
+                 </tr>
+             {% endfor %}
+         </table>
+
+    </div>
+
+  </body>
+</html>
+
