@@ -88,10 +88,10 @@ DATABASES = {
     },
     'comarch': {
         'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'ERPXL_NordaMar',
-        'USER': 'app1',
-        'PASSWORD': '@lp@k@2018',
-        'HOST': 'nordamar-srv\comarch',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
         'PORT': '',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
